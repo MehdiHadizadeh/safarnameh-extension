@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سفرنامهٔ اسنپ — گزارش کامل سفرهای تو</title>
+<meta name="description" content="تاریخچهٔ کامل سفرهای اسنپ‌ات را در مرورگر خودت تحلیل کن: تورم کرایه، نقشه، ریتم هفته و مسیرهای تکراری. دیتا جایی فرستاده نمی‌شود.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="سفرنامهٔ اسنپ">
+<meta property="og:description" content="گزارش کامل سفرهای اسنپ، کاملاً در مرورگر خودت.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mehdihadizadeh.github.io/safarnameh-extension/branding/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' 'unsafe-inline' file:; font-src 'self' data: file:; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22%3E%3Crect width=%22128%22 height=%22128%22 rx=%2228%22 fill=%22%230b4a57%22/%3E%3Crect x=%2253%22 y=%2224%22 width=%2222%22 height=%2211%22 rx=%223.5%22 fill=%22%23fff%22/%3E%3Cpath d=%22M30 70 L43 45 Q45 40 51 40 H77 Q83 40 85 45 L98 70 Z%22 fill=%22%23f4a300%22/%3E%3Crect x=%2212%22 y=%2264%22 width=%22104%22 height=%2234%22 rx=%2212%22 fill=%22%23f4a300%22/%3E%3Cpath d=%22M44 66 L51 49 H62 V66 Z M66 66 V49 H77 L84 66 Z%22 fill=%22%230b4a57%22/%3E%3Crect x=%2212%22 y=%2280%22 width=%22104%22 height=%224%22 fill=%22%23fff%22 opacity=%22.9%22/%3E%3Ccircle cx=%2236%22 cy=%2298%22 r=%2213%22 fill=%22%2307323c%22 stroke=%22%230b4a57%22 stroke-width=%226%22/%3E%3Ccircle cx=%2292%22 cy=%2298%22 r=%2213%22 fill=%22%2307323c%22 stroke=%22%230b4a57%22 stroke-width=%226%22/%3E%3Ccircle cx=%2236%22 cy=%2298%22 r=%224.5%22 fill=%22%23cfe7ea%22/%3E%3Ccircle cx=%2292%22 cy=%2298%22 r=%224.5%22 fill=%22%23cfe7ea%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<button class="theme-sw" id="theme-btn" type="button" role="switch" aria-checked="false" aria-label="حالت تیره"><svg class="ic ic-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="ic ic-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="knob"></span></button>
+<div class="wrap">
+
+  <!-- ══ landing ══════════════════════════════════════════ -->
+  <div id="landing">
+
+    <nav class="topbar" aria-label="سفرنامه">
+      <span class="mark">سفرنامه</span>
+      <a href="#extension">افزونه</a><a href="#start">با کنسول</a>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <h1>سال سفرهایت با اسنپ، در هشت کارت</h1>
+        <p class="dek">تاریخچهٔ ۱۲ ماه اخیرت را می‌گیریم و خلاصه‌اش می‌کنیم: چند سفر رفتی، چقدر خرج شد، کدام مسیر را بیشتر رفتی و کرایه‌اش چقدر گران شد. همه‌چیز در مرورگر خودت می‌ماند.</p>
+        <div class="cta-row">
+          <button class="btn primary" id="try-demo">دیدن گزارش نمونه</button>
+          <a class="btn ghost" href="#start">شروع با دیتای خودم</a>
+        </div>
+        <p class="fine">مستقل از اسنپ · بدون سرور · بدون ثبت‌نام · <a href="#extension">افزونهٔ کروم هم داریم</a></p>
+      </div>
+      <div class="hero-cards" aria-hidden="true">
+        <div class="sample s-back"><span class="sk">نمونه · کرایه‌ای که</span><span class="sv">×۲٫۹</span></div>
+        <div class="sample s-mid"><span class="sk">نمونه · پرخرج‌ترین ماه</span><span class="sv">مرداد</span></div>
+        <div class="sample s-front"><span class="sk">نمونه · سفر موفق</span><span class="sv">۱۳۰</span><span class="ss">ماهی حدود ۱۲ سفر</span></div>
+      </div>
+    </header>
+
+    <section class="extsec" id="extension">
+      <div class="ext-copy">
+        <span class="ext-tag">راه ساده‌تر</span>
+        <h2>افزونهٔ کروم: بدون کنسول، با یک کلیک</h2>
+        <p>اگر کار با کنسول برایت سخت است، افزونهٔ سفرنامه همین کار را خودش می‌کند. وارد اسنپ می‌شوی، روی آیکن می‌زنی و گزارش در یک تب جدید باز می‌شود.</p>
+        <ol class="ext-steps">
+          <li><b>نصب:</b> فایل zip را از بخش Releases ریپو بگیر، باز کن و در <code>chrome://extensions</code> با «Load unpacked» پوشه را انتخاب کن (حالت توسعه‌دهنده روشن باشد).</li>
+          <li><b>اسنپ:</b> <a href="https://app.snapp.taxi/ride-history" target="_blank" rel="noopener">app.snapp.taxi/ride-history</a> را باز کن و وارد شو.</li>
+          <li><b>کلیک:</b> روی آیکن سفرنامه بزن و «ساخت گزارش».</li>
+        </ol>
+        <p class="fine">فعلاً در فروشگاه کروم نیست. دسترسی‌اش فقط به <span class="mono" dir="ltr">app.snapp.taxi</span> است، چیزی ذخیره نمی‌کند و جایی نمی‌فرستد.</p>
+        <a class="btn primary" id="ext-dl" href="#" hidden>دانلود افزونه</a>
+      </div>
+      <div class="ext-pop" aria-hidden="true">
+        <div class="ep-brand"><i></i><div><b>سفرنامه</b><span>گزارش ۱۲ ماه اخیر سفرهای اسنپ</span></div></div>
+        <div class="ep-status"><i></i>در صفحهٔ اسنپ هستی؛ آماده است</div>
+        <div class="ep-btn">ساخت گزارش</div>
+      </div>
+    </section>
+
+    <section id="start" class="flow">
+      <h2>یا با کنسول: سه قدم، حدود دو دقیقه</h2>
+      <p class="note"><b>فقط با لپ‌تاپ یا کامپیوتر.</b> مرورگر موبایل کنسول ندارد. اگر روی گوشی هستی، گزارش نمونه را همین‌جا ببین و بعد صفحه را روی کامپیوتر باز کن.</p>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="num">۱</span>
+          <div class="body">
+            <h3>وارد اسنپ شو</h3>
+            <p><a href="https://app.snapp.taxi/ride-history" target="_blank" rel="noopener">app.snapp.taxi/ride-history</a> را باز کن و مطمئن شو تاریخچه‌ات را می‌بینی. بعد <code>F12</code> یا <code>Ctrl+Shift+J</code> (مک: <code>⌥⌘J</code>) را بزن و به تب Console برو.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="num">۲</span>
+          <div class="body">
+            <h3>کد را در کنسول اجرا کن</h3>
+            <ul class="trust">
+              <li>فقط تاریخچهٔ خودت را از اسنپ می‌خواند</li>
+              <li>چیزی را جایی نمی‌فرستد و چیزی را پاک نمی‌کند</li>
+              <li>حدود بیست ثانیه طول می‌کشد؛ تب را باز نگه دار</li>
+            </ul>
+            <button class="btn primary copy-main" id="copy-btn">کپی کد</button>
+            <details class="code"><summary>کد را ببین (۶۵ خط، قابل خواندن)</summary>
+              <div class="codewrap"><pre id="code" class="mono"></pre></div>
+            </details>
+            <p class="cap">اگر مرورگر اجازهٔ چسباندن نداد، یک بار عبارت <code>allow pasting</code> را در کنسول تایپ کن و Enter بزن. در پایان یک فایل JSON روی کامپیوترت ذخیره می‌شود.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="num">۳</span>
+          <div class="body">
+            <h3>فایل را اینجا رها کن</h3>
+            <div class="drop" id="drop">
+              <b>فایل JSON را اینجا بینداز</b>
+              <span>یا انتخابش کن</span>
+              <input type="file" id="file" accept=".json,application/json" hidden>
+              <button class="btn" id="pick">انتخاب فایل</button>
+              <p class="err" id="err" role="alert" hidden></p>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="trustband">
+      <h2>چرا می‌توانی مطمئن باشی</h2>
+      <div class="tb-grid">
+        <div><b>هیچ درخواستی نمی‌رود</b><p>سایت سرور ندارد و مرورگر با یک سیاست امنیتی هر ارتباط بیرونی را ممنوع کرده است. فونت‌ها هم از خود سایت می‌آیند.</p></div>
+        <div><b>هیچ‌چیز ذخیره نمی‌شود</b><p>نه حافظهٔ مرورگر، نه کوکی، نه آمار بازدید. با بستن تب، گزارش از بین می‌رود.</p></div>
+        <div><b>خودت امتحان کن</b><p>بعد از باز شدن صفحه اینترنت را قطع کن و فایل را بینداز؛ گزارش ساخته می‌شود.</p></div>
+      </div>
+    </section>
+
+    <section class="faq-sec">
+      <h2>پرسش‌ها</h2>
+      <div class="faq">
+        <details>
+          <summary>چرا فقط ۱۲ ماه؟</summary>
+          <p>اسنپ سفرهای قدیمی‌تر از حدود یک سال را از سرور برنمی‌گرداند و هیچ ابزاری نمی‌تواند آن‌ها را بیاورد. عدد «سفرهای موفق» که خود اسنپ نشان می‌دهد کل عمر حساب است؛ اگر آن را داشته باشیم، پایین گزارش نشان داده می‌شود.</p>
+        </details>
+        <details>
+          <summary>مسافت‌ها دقیق‌اند؟</summary>
+          <p>تخمینی‌اند. API مسافت هر سفر را نمی‌دهد، پس فاصلهٔ خط مستقیم بین ایستگاه‌ها حساب می‌شود و در ۱٫۴ ضرب می‌شود؛ ضریبی که با عدد رسمی اسنپ تطبیق داده شده. روند در طول زمان درست است، حتی اگر عدد مطلق کمی فرق کند.</p>
+        </details>
+        <details>
+          <summary>آیا اسنپ به این کار حساس است؟</summary>
+          <p>این کد همان درخواستی را می‌زند که خود اپ می‌زند، با همان نشست تو، و فقط دیتای خودت را می‌خواند. با این حال شرایط استفادهٔ اسنپ ممکن است دسترسی خودکار را محدود کند؛ خودت آن را بخوان. سرعت کد عمداً کند است تا باری روی سرویس نگذارد.</p>
+        </details>
+        <details>
+          <summary>کد دقیقاً به چه چیزی دست می‌زند؟</summary>
+          <p>فقط <span class="mono" dir="ltr">localStorage</span> و <span class="mono" dir="ltr">sessionStorage</span> همان صفحهٔ اسنپ را می‌خواند تا توکن نشست را پیدا کند و با آن تاریخچه را بگیرد. چیزی نمی‌نویسد، چیزی پاک نمی‌کند و به دامنهٔ دیگری وصل نمی‌شود. کد کامل بالا قابل خواندن است.</p>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ report ═══════════════════════════════════════════ -->
+  <div id="report" hidden>
+
+    <div class="toolbar">
+      <span class="demo-flag" id="demo-flag" hidden>گزارش نمونه با دیتای ساختگی</span>
+      <button class="btn ghost" id="restart">تحلیل یک فایل دیگر</button>
+    </div>
+
+    <div class="range" id="range" role="group" aria-label="بازهٔ گزارش"></div>
+    <p class="note" id="range-note" role="status" hidden></p>
+
+    <section class="reel-sec" aria-label="خلاصهٔ تاریخچه">
+      <div class="reel" id="reel" tabindex="0" role="region" aria-label="کارت‌های خلاصه؛ با کلیدهای جهت‌نما ورق بزن"></div>
+      <div class="reel-nav">
+        <button class="rn" id="rn-prev" aria-label="کارت قبلی"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <button class="rn" id="rn-next" aria-label="کارت بعدی"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <a class="more" href="#full">تحلیل کامل <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9.5 12 15.5l6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </section>
+
+    <header id="full" class="rhead">
+      <h1 id="r-h1"></h1>
+      <div class="metabar">
+        <span>بازه: <b id="m-range"></b></span>
+        <span>رکورد: <b id="m-rec"></b></span>
+        <span>سفر موفق: <b id="m-ok"></b></span>
+        <span>لغو شده: <b id="m-cx"></b></span>
+      </div>
+      <p class="life" id="life" hidden></p>
+    </header>
+
+    <section class="thesis">
+      <div class="t-top">
+        <div>
+          <h2 id="thesis-h"></h2>
+          <p class="route-line" id="route-desc"></p>
+        </div>
+        <div class="mult" id="route-mult"></div>
+      </div>
+      <div class="tape" id="tape"></div>
+      <div class="tape-bars" id="tape-bars"></div>
+      <p class="cap" id="thesis-cap" style="margin-top:16px"></p>
+    </section>
+
+    <section class="stats" id="stats"></section>
+
+    <section id="spend">
+      <div class="shead">
+        <h2>هزینهٔ ماهانه</h2>
+        <p class="snote">مجموع کرایهٔ پرداختی در هر ماه شمسی. رشد، ترکیبی از گرانی و تعداد سفر است.</p>
+      </div>
+      <figure>
+        <div class="plot"><svg id="c-spend" viewBox="0 0 840 230" role="img" aria-label="نمودار میله‌ای هزینهٔ ماهانه"></svg></div>
+        <figcaption class="cap">ستون آخر معمولاً ماه ناقص است.</figcaption>
+      </figure>
+    </section>
+
+
+    <section>
+      <div class="shead">
+        <h2>تورم، بر حسب تومان به ازای هر کیلومتر</h2>
+        <p class="snote">میانهٔ فصلی، فقط سفرهای شهری ۱ تا ۳۰ کیلومتر تا سفرهای بین‌شهری نمودار را منحرف نکنند.</p>
+      </div>
+      <figure>
+        <div class="plot"><svg id="c-infl" viewBox="0 0 840 300" role="img" aria-label="نمودار خطی میانهٔ فصلی کرایه به ازای هر کیلومتر"></svg></div>
+        <figcaption class="cap" id="infl-cap"></figcaption>
+      </figure>
+      <details class="table">
+        <summary>جدول داده</summary>
+        <div class="plot"><table id="infl-tbl"><thead><tr><th>فصل</th><th>تومان/کیلومتر</th><th>تعداد سفر</th><th>نسبت به فصل پایه</th></tr></thead><tbody></tbody></table></div>
+      </details>
+    </section>
+
+    <section>
+      <div class="shead">
+        <h2>سبد ثابت</h2>
+        <p class="snote">کریدورهای پرتکرار، رفت و برگشت با هم. مقایسهٔ <b>میانهٔ</b> کرایه در اولین و آخرین سال، نه دو سفر منفرد.</p>
+      </div>
+      <div class="baskets" id="baskets"></div>
+    </section>
+
+    <section>
+      <div class="shead">
+        <h2>نقشهٔ سفرها</h2>
+        <p class="snote">هر خط یک سفر، هر دایره یک مکان پرتکرار. اندازهٔ دایره به تعداد دفعات است.</p>
+      </div>
+      <div class="maps" id="maps"></div>
+      <div class="rank" id="places"></div>
+      <div class="legend"><span class="dot" style="background:var(--s1)"></span> سفر مستقیم
+        <span class="dot" style="background:var(--sodium-mark);margin-right:14px"></span> سفر دومقصده (مبدأ ← ایستگاه ← مقصد)</div>
+    </section>
+
+    <section id="sec-multi">
+      <div class="shead">
+        <h2>سفرهای دومقصده</h2>
+        <p class="snote">وقتی یک ایستگاه میانی اضافه می‌کنی، سفر عملاً به یک سفر دیگر تبدیل می‌شود.</p>
+      </div>
+      <p class="lede" id="multi-line"></p>
+      <div class="stats" id="multi-stats" style="grid-template-columns:repeat(4,1fr)"></div>
+      <p class="snote" style="max-width:62ch">پرتکرارترین جفت‌مقصدها — مبدأ عوض می‌شود، ولی دو ایستگاه پایانی ثابت می‌مانند:</p>
+      <div class="rank" id="multi-pairs"></div>
+    </section>
+
+    <section>
+      <div class="shead">
+        <h2>ریتم هفته</h2>
+        <p class="snote">تعداد سفر در هر خانه از شبکهٔ روز × ساعت.</p>
+      </div>
+      <figure>
+        <div class="heatwrap"><div class="heat" id="heat"></div></div>
+        <figcaption class="legend">کم <i style="background:var(--q1)"></i><i style="background:var(--q2)"></i><i style="background:var(--q3)"></i><i style="background:var(--q4)"></i><i style="background:var(--q5)"></i><i style="background:var(--q6)"></i> زیاد</figcaption>
+      </figure>
+      <div class="cols">
+        <figure>
+          <div class="plot"><svg id="c-hour" viewBox="0 0 460 190" role="img" aria-label="نمودار میله‌ای سفر بر حسب ساعت شبانه‌روز"></svg></div>
+          <figcaption class="cap">ساعت شبانه‌روز</figcaption>
+        </figure>
+        <figure>
+          <div class="plot"><svg id="c-wday" viewBox="0 0 460 190" role="img" aria-label="نمودار میله‌ای سفر بر حسب روز هفته"></svg></div>
+          <figcaption class="cap">روز هفته</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <div class="shead">
+        <h2>ناوگان</h2>
+        <p class="snote">مدل خودرو در سفرهای موفق، و آماری از رانندگان.</p>
+      </div>
+      <div class="cols">
+        <div class="rank" id="veh"></div>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <p class="lede" id="driver-line"></p>
+          <div class="chips" id="rate-chips"></div>
+          <p class="cap" id="rate-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shead">
+        <h2>لغو</h2>
+        <p class="snote">سهم سفرهایی که به مقصد نرسیدند.</p>
+      </div>
+      <div class="cols">
+        <div class="rank" id="cx"></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <p class="lede">بیشترین احتمال لغو از سوی راننده در این ساعت‌ها بوده:</p>
+          <div class="chips" id="cx-hours"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shead"><h2>چند عدد دیگر</h2></div>
+      <div class="facts" id="facts"></div>
+    </section>
+
+    <footer class="method">
+      <b>روش و محدودیت‌ها</b>
+      <ul>
+        <li>ترتیب ایستگاه‌ها در سفرهای دومقصده <span class="mono" dir="ltr">origin → destination → extra_destination</span> است و مسافت هر دو پا جداگانه حساب می‌شود.</li>
+        <li>مسافت‌ها خط مستقیم‌اند، نه مسیر جاده. ضریب تخمینی مسیر واقعی ۱٫۴ است. نرخ‌های تومان‌بر‌کیلومتر بر پایهٔ خط مستقیم محاسبه شده‌اند، پس مطلقشان بالاتر از نرخ جاده است؛ روند در طول زمان درست است.</li>
+        <li>اسنپ برای یک مکان ثابت هر بار مختصات کمی متفاوت ثبت می‌کند، پس نقاط با شعاع ۱۵۰ متر خوشه‌بندی می‌شوند و مسیرها بر پایهٔ خوشه شمرده می‌شوند، نه رشتهٔ آدرس.</li>
+        <li>برای مقایسهٔ کرایه‌ها میانهٔ سالانه به کار رفته، نه اولین و آخرین سفر — مقایسهٔ دو سفر منفرد به نوسان یک سفر تکی وابسته است.</li>
+        <li>مبلغ سفرهای لغوشده در API ثبت می‌شود ولی پرداخت نشده؛ در محاسبهٔ هزینه کنار گذاشته شده است.</li>
+        <li>ماه‌ها و فصل‌ها شمسی‌اند و زمان‌ها به وقت محلیِ ثبت‌شدهٔ سرویس.</li>
+      </ul>
+    </footer>
+  </div>
+
+  <div class="sitefoot">
+    <span>ساخته‌شده برای کنجکاوی. بدون سرور، بدون حساب کاربری، بدون ردیاب.</span>
+    <span>وابسته به اسنپ نیست.</span>
+  </div>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script src="assets/analyze.js"></script>
+<script src="assets/report.js"></script>
+<script src="assets/collector.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

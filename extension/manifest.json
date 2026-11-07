@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "سفرنامه — گزارش سفرهای اسنپ",
+  "short_name": "سفرنامه",
+  "version": "0.1.0",
+  "description": "تاریخچهٔ سفرهای اسنپ‌ات را بدون کنسول می‌گیرد و در همین مرورگر گزارش می‌سازد. هیچ دیتایی ذخیره یا ارسال نمی‌شود.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["https://app.snapp.taxi/*"],
+  "action": {
+    "default_title": "سفرنامه",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png" }
+  },
+  "background": { "service_worker": "background.js" },
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+}

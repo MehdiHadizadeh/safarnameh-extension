@@ -1,0 +1,11 @@
+*.json
+!package.json
+*.har
+.DS_Store
+.impeccable/
+dist/
+_t.html
+temp/
+!extension/manifest.json
+extension/assets/
+extension/report.html

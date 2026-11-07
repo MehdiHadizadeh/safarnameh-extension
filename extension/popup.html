@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>سفرنامه</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="brand">
+    <img src="icons/icon48.png" width="40" height="40" alt="">
+    <div>
+      <h1>سفرنامه</h1>
+      <p>گزارش ۱۲ ماه اخیر سفرهای اسنپ</p>
+    </div>
+  </header>
+
+  <div class="status" id="status" data-state="idle" role="status" aria-live="polite">
+    <i class="dot" aria-hidden="true"></i><span id="status-text">در حال بررسی…</span>
+  </div>
+
+  <div class="work" id="work" hidden>
+    <div class="count"><b id="count">۰</b><span>سفر پیدا شد</span></div>
+    <div class="track"><i id="fill"></i></div>
+  </div>
+
+  <p class="msg" id="msg" hidden></p>
+
+  <button id="go" type="button">ساخت گزارش</button>
+
+  <ul class="trust">
+    <li><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>فقط تاریخچهٔ خودت را از اسنپ می‌خواند</li>
+    <li><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>چیزی ذخیره یا به جایی ارسال نمی‌شود</li>
+    <li><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>حدود بیست ثانیه طول می‌کشد</li>
+  </ul>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+name: گزارش باگ
+description: چیزی درست کار نمی‌کند
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "لطفاً آدرس، مختصات، نام راننده یا هر دادهٔ شخصی سفر را اینجا نگذار."
+  - type: dropdown
+    id: where
+    attributes:
+      label: کجا
+      options: [افزونهٔ کروم, نسخهٔ وب با کنسول, گزارش نمونه]
+    validations: {required: true}
+  - type: textarea
+    id: what
+    attributes:
+      label: چه شد و انتظار چه بود
+    validations: {required: true}
+  - type: input
+    id: env
+    attributes:
+      label: مرورگر و نسخه
