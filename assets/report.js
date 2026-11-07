@@ -102,7 +102,7 @@
           chips: [[money(M.money.median), "سفر معمولی"], [money(S.priciest), "گران‌ترین سفر"], M.money.discount ? [money(M.money.discount), "تخفیف گرفتی"] : null] },
         { t: "ink", k: "مسافت تقریبی", v: fa(grp(road)) + "<small>کیلومتر</small>", art: kmArt,
           s: "حدود " + fa(dec((road / trip[0]).toFixed(1))) + " بار " + trip[1] + ".",
-          chips: [[fa(Math.round(M.dist.avg * M.dist.factor)), "کیلومتر، سفر معمولی"], [fa(S.farthest), "طولانی‌ترین سفر"], L ? [fa(grp(L.km)), "کل عمر حساب (اسنپ)"] : null] },
+          chips: [[fa(Math.round(M.dist.avg * M.dist.factor)), "کیلومتر، سفر معمولی"], [fa(S.farthest), "طولانی‌ترین سفر"], L ? [fa(grp(L.km)), "کل سفرها از روز اول (اسنپ)"] : null] },
         { t: "green", k: "شلوغ‌ترین زمان", v: DAYS[S.busiestDay], viz: bars(hr, hrMax, ["۰", "۲۳"]),
           s: hourTag + ": بیشتر ساعت " + fa(S.busiestHour) + " تا " + fa((S.busiestHour + 1) % 24) + " سفر کردی.",
           chips: [[fa(night), "سفر بین ۲۲ تا ۵ صبح"], [fa(dec(M.time.avgMin)), "دقیقه، میانگین سفر"]] }
@@ -161,7 +161,7 @@
 
       var lf = document.getElementById("life");
       lf.hidden = !L;
-      if (L) lf.innerHTML = "کل عمر حساب (عدد خود اسنپ، فراتر از ۱۲ ماه اخیر): <b>" + fa(grp(L.rides)) +
+      if (L) lf.innerHTML = "از روز اول حسابت (عدد خود اسنپ، بیشتر از ۱۲ ماه اخیر): <b>" + fa(grp(L.rides)) +
         "</b> سفر موفق · <b>" + fa(grp(L.km)) + "</b> کیلومتر · <b>" + fa(grp(L.hours)) + "</b> ساعت.";
     })();
 
@@ -187,10 +187,10 @@
       bars.appendChild(b);
     });
     document.getElementById("thesis-cap").innerHTML =
-      "میانهٔ کرایه در هر بازه (سال یا فصل، بسته به طول تاریخچه)، روی " + fa(TH.n) + " سفر. این کریدور " +
-      fa(dec(TH.mult.toFixed(1))) + " برابر شده، در حالی که شاخص کلیِ تومان‌بر‌کیلومتر در همین بازه " +
+      "کرایهٔ معمولی (میانه) در هر سال یا فصل، روی " + fa(TH.n) + " سفر. کرایهٔ این مسیر " +
+      fa(dec(TH.mult.toFixed(1))) + " برابر شده، ولی تومان بر کیلومتر در کل سفرها در همین مدت " +
       fa(dec(ratio(M.infl[M.infl.length-1].v, M.infl[0].v).toFixed(1))) +
-      " برابر شده — یعنی گرانی در همهٔ مسیرها به یک اندازه نبوده.";
+      " برابر؛ یعنی گرانی همه‌جا یکسان نبوده.";
 
     /* ── stats ────────────────────────────── */
     var road = Math.round(M.dist.straight * M.dist.factor);
@@ -198,9 +198,9 @@
     [["کل کرایهٔ پرداختی", money(M.money.total) + " ت", "میانگین " + money(M.money.avg) + " تومان در هر سفر"],
      ["سفر موفق", fa(M.meta.ok), "از " + fa(M.meta.records) + " رکورد"],
      ["مسافت تقریبی", fa(grp(road)) + " کیلومتر", fa(grp(M.dist.straight)) + " کیلومتر خط مستقیم × ۱٫۴"],
-     ["زمان سپری‌شده", fa(M.time.hours) + " ساعت", "میانگین " + fa(dec(M.time.avgMin)) + " دقیقه"],
-     ["تخفیف دریافتی", money(M.money.discount) + " ت", "روی کل سفرها"],
-     ["روزهای دارای سفر", fa(M.meta.activeDays), "از " + fa(M.meta.spanDays) + " روز"]
+     ["زمان توی راه", fa(M.time.hours) + " ساعت", "میانگین " + fa(dec(M.time.avgMin)) + " دقیقه"],
+     ["تخفیفی که گرفتی", money(M.money.discount) + " ت", "روی کل سفرها"],
+     ["روزهایی که سفر کردی", fa(M.meta.activeDays), "از " + fa(M.meta.spanDays) + " روز"]
     ].forEach(function (s) {
       stats.appendChild(div("stat", '<span class="v">' + s[1] + '</span><span class="k">' +
         s[0] + '</span><span class="sub">' + s[2] + "</span>"));
@@ -258,7 +258,7 @@
       document.getElementById("infl-cap").innerHTML =
         "از " + money(base) + " تومان در " + A.SEASON[s[0].q] + " " + fa(s[0].y) +
         " به <b style='color:var(--sodium)'>" + money(last.v) + "</b> تومان در " +
-        A.SEASON[last.q] + " " + fa(last.y) + " — " + fa(dec(ratio(last.v, base).toFixed(1))) + " برابر.";
+        A.SEASON[last.q] + " " + fa(last.y) + "؛ " + fa(dec(ratio(last.v, base).toFixed(1))) + " برابر.";
       var tb = document.querySelector("#infl-tbl tbody"); tb.innerHTML = "";
       s.forEach(function (d) {
         var tr = document.createElement("tr");
@@ -386,7 +386,7 @@
           '<span class="lab" style="width:auto">' + esc(p.name) + '</span>' +
           '<span class="track"><span class="fill" style="width:' + (100*p.n/mx) + '%"></span></span>' +
           '<span class="n">' + fa(p.n) + (p.variants > 3 ?
-            ' <span style="opacity:.7">· ' + fa(p.variants) + ' نگارش</span>' : "") + '</span>'));
+            ' <span style="opacity:.7">· ' + fa(p.variants) + ' جور آدرس</span>' : "") + '</span>'));
       });
     })();
 
@@ -397,8 +397,8 @@
       sec.hidden = false;
       document.getElementById("multi-line").innerHTML =
         "<b>" + fa(m.n) + "</b> سفر با ایستگاه میانی ثبت شده (" + fa(m.ok) +
-        " تای آن به مقصد رسید). این سفرها به‌طور میانگین <b>" + fa(dec(m.km)) +
-        "</b> کیلومترند در برابر <b>" + fa(dec(m.kmSingle)) + "</b> کیلومترِ سفر معمولی.";
+        " تایش به مقصد رسید). میانگین این سفرها <b>" + fa(dec(m.km)) +
+        "</b> کیلومتر است، سفر معمولی <b>" + fa(dec(m.kmSingle)) + "</b>.";
       var st = clear("multi-stats");
       [["مسافت میانگین، دومقصده", fa(dec(m.km)) + " کیلومتر"],
        ["مسافت میانگین، تک‌مقصده", fa(dec(m.kmSingle)) + " کیلومتر"],
@@ -484,10 +484,10 @@
           '<span class="n">' + fa(kv[1]) + '</span>'));
       });
       document.getElementById("driver-line").innerHTML =
-        "در " + fa(M.meta.ok) + " سفر موفق، <b>" + fa(M.drivers.unique) +
-        "</b> رانندهٔ متفاوت. فقط <b>" + fa(M.drivers.repeat) +
-        "</b> نفرشان بیش از یک بار تکرار شده‌اند. " + esc(v[0][0]) + " به‌تنهایی <b>" +
-        fa(Math.round(100*v[0][1]/M.meta.ok)) + "٪</b> سفرها را برده است.";
+        "توی " + fa(M.meta.ok) + " سفر، <b>" + fa(M.drivers.unique) +
+        "</b> راننده با هم فرق داشتند و فقط <b>" + fa(M.drivers.repeat) +
+        "</b> نفرشان بیش از یک بار تکرار شدند. " + esc(v[0][0]) + " تنها <b>" +
+        fa(Math.round(100*v[0][1]/M.meta.ok)) + "٪</b> سفرها را برده.";
       var rc = clear("rate-chips"), order = ["5","4","3","2","1"];
       var rtot = order.reduce(function (a, k) { return a + (M.ratings[k] || 0); }, 0);
       order.forEach(function (k) {
@@ -496,8 +496,8 @@
           fa(k) + " ستاره <b>" + fa(M.ratings[k] || 0) + "</b>"));
       });
       document.getElementById("rate-note").textContent = rtot
-        ? fa(Math.round(100*(M.ratings["5"]||0)/rtot)) + "٪ از امتیازها پنج ستاره بوده است."
-        : "امتیازی ثبت نشده است.";
+        ? fa(Math.round(100*(M.ratings["5"]||0)/rtot)) + "٪ از امتیازها پنج ستاره بوده."
+        : "امتیازی ثبت نشده.";
     })();
 
     /* ── cancellations ────────────────────── */
@@ -522,16 +522,16 @@
       var road = Math.round(M.dist.straight * M.dist.factor);
       var night = M.hour.slice(0, 6).reduce(function (a, b) { return a + b; }, 0);
       var box = clear("facts");
-      [[fa(M.meta.streak) + " روز", "طولانی‌ترین رشتهٔ روزهای پیاپی با حداقل یک سفر"],
+      [[fa(M.meta.streak) + " روز", "بیشترین روزِ پشت‌سرهم که سفر داشتی"],
        [fa(night), "سفر بین نیمه‌شب و ۶ صبح"],
-       [fa(dec((road/40075*100).toFixed(1))) + "٪", "از دور کرهٔ زمین، با تخمین مسیر واقعی"],
-       [fa(Math.round(M.time.hours/24)) + " شبانه‌روز", "زمان خالص در انتظار و داخل خودرو"],
+       [fa(dec((road/40075*100).toFixed(1))) + "٪", "از دور زمین، با مسیر تخمینی"],
+       [fa(Math.round(M.time.hours/24)) + " شبانه‌روز", "زمان توی راه و منتظر ماندن"],
        [money(M.money.max) + " ت", "گران‌ترین سفر"],
-       [fa(M.meta.clusters) + " مکان", "از " + fa(M.meta.coords) + " مختصات خام، پس از خوشه‌بندی"],
+       [fa(M.meta.clusters) + " مکان", "از " + fa(M.meta.coords) + " مختصات خام که کنار هم جمع شد"],
        [fa(M.multi.n), "سفر با ایستگاه میانی"],
-       M.opts.hurry ? [fa(M.opts.hurry), "بار گزینهٔ «عجله دارم» را زده‌ای"]
+       M.opts.hurry ? [fa(M.opts.hurry), "بار «عجله دارم» را زدی"]
                     : [fa(M.story.cancelPct) + "٪", "از درخواست‌هایت لغو شد"],
-       [fa(M.opts.wait), "بار از راننده خواسته‌ای بین راه منتظر بماند"]
+       [fa(M.opts.wait), "بار از راننده خواستی بین راه منتظرت بماند"]
       ].forEach(function (f) {
         box.appendChild(div("fact", '<span class="fv">' + f[0] + '</span><span class="fk">' + f[1] + "</span>"));
       });

@@ -23,11 +23,11 @@
 
   chrome.runtime.sendMessage({ type: "report-ready" }, function (res) {
     var data = res && res.data;
-    if (!data) { msg.hidden = false; msg.textContent = "داده‌ای نیست. روی آیکن افزونه بزن و دوباره گزارش بساز. (گزارش‌ها عمداً نگه‌داری نمی‌شوند.)"; return; }
+    if (!data) { msg.hidden = false; msg.textContent = "اطلاعاتی نیست. روی آیکن افزونه بزن و دوباره گزارش بساز. (گزارش عمداً ذخیره نمی‌شود.)"; return; }
     try {
       window.SnappReport.renderData(data, false);
       msg.hidden = !data.partial;
-      if (data.partial) msg.textContent = "گرفتن تاریخچه نیمه‌کاره ماند (محدودیت یا قطعی اسنپ)؛ اعداد ممکن است ناقص باشند. دوباره امتحان کن.";
+      if (data.partial) msg.textContent = "تاریخچه کامل گرفته نشد (شاید اسنپ محدود کرد یا قطع شد)، پس ممکن است اعداد ناقص باشند. دوباره امتحان کن.";
     } catch (e) {
       msg.hidden = false; msg.textContent = e.message || "تحلیل ممکن نشد.";
     }

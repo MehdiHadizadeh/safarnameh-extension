@@ -3,7 +3,7 @@
    Retested 2026-11-07: history is capped at ~12 months server-side, the old
    "empty page on a full page" glitch no longer reproduces, and the API signals
    the real end with an empty `required_params` / a page shorter than 15. */
-window.SNAPP_COLLECTOR = String.raw`/* گزارش سفرهای اسنپ — جمع‌آوری تاریخچه
+window.SNAPP_COLLECTOR = String.raw`/* گزارش سفرهای اسنپ: جمع‌آوری تاریخچه
    این کد فقط با سرور اسنپ حرف می‌زند و خروجی را روی همین کامپیوتر ذخیره می‌کند. */
 (async () => {
   const sleep = ms => new Promise(r => setTimeout(r, ms));
