@@ -1,6 +1,6 @@
 (function () {
   /* set when the extension zip is published, e.g. the GitHub Releases URL */
-  var RELEASE_URL = "";
+  var RELEASE_URL = "https://github.com/MehdiHadizadeh/safarnameh-extension/releases/latest";
   var dl = document.getElementById("ext-dl");
   if (RELEASE_URL) { dl.href = RELEASE_URL; dl.hidden = false; }
 
