@@ -174,7 +174,7 @@
       X(TH.mult.toFixed(1)) + "<small>برابر شدن کرایه</small>";
     var tape = clear("tape"), bars = clear("tape-bars");
     tape.style.gridTemplateColumns = bars.style.gridTemplateColumns =
-      "repeat(" + yrs.length + ",1fr)";
+      "repeat(" + yrs.length + ",minmax(0,1fr))";
     var maxFare = Math.max.apply(null, yrs.map(function (y) { return y.med; }));
     yrs.forEach(function (y, i) {
       var last = i === yrs.length - 1;
@@ -183,6 +183,7 @@
         '<span class="fare">' + money(y.med) + ' <span class="unit">تومان</span></span>'));
       var b = document.createElement("i");
       b.style.height = (14 + 58 * y.med / maxFare) + "px";
+      tape.lastChild.style.setProperty("--h", (14 + 58 * y.med / maxFare) + "px");
       if (last) b.className = "hot";
       bars.appendChild(b);
     });
@@ -299,7 +300,7 @@
     (function () {
       var box = clear("maps");
       M.areas.forEach(function (area, idx) {
-        var W = 640, H = 460, pad = 28;
+        var narrow = window.innerWidth < 600, W = narrow ? 340 : 640, H = narrow ? 420 : 460, pad = narrow ? 24 : 28, Hm = H - 70; /* bottom strip is reserved for the scale bar */
         var lats = [], lngs = [];
         area.paths.forEach(function (p) { p.forEach(function (q) { lats.push(q[0]); lngs.push(q[1]); }); });
         var qt = function (arr, f) {
@@ -310,10 +311,10 @@
         if (la1 - la0 < 1e-4) { la0 -= 5e-4; la1 += 5e-4; }
         if (ln1 - ln0 < 1e-4) { ln0 -= 5e-4; ln1 += 5e-4; }
         var k = Math.cos((la0+la1)/2 * Math.PI/180);
-        var sc = Math.min((W-2*pad)/((ln1-ln0)*k), (H-2*pad)/(la1-la0));
-        var ox = (W - (ln1-ln0)*k*sc)/2, oy = (H - (la1-la0)*sc)/2;
+        var sc = Math.min((W-2*pad)/((ln1-ln0)*k), (Hm-2*pad)/(la1-la0));
+        var ox = (W - (ln1-ln0)*k*sc)/2, oy = (Hm - (la1-la0)*sc)/2;
         var X = function (ln) { return ox + (ln-ln0)*k*sc; };
-        var Y = function (la) { return H - (oy + (la-la0)*sc); };
+        var Y = function (la) { return Hm - (oy + (la-la0)*sc); };
         var pxKm = sc / 111.2;
 
         var cell = div("mapcell");
@@ -328,10 +329,10 @@
         /* faint graticule so distances can be judged by eye */
         var step = pxKm >= 40 ? 1 : pxKm >= 12 ? 2 : pxKm >= 5 ? 5 : 10;
         var sp = step * pxKm, i2;
-        for (i2 = 0; ox + i2 * sp <= W; i2++) el("line", { x1: ox + i2 * sp, x2: ox + i2 * sp, y1: 0, y2: H, "class": "map-grid" }, svg);
-        for (i2 = 1; ox - i2 * sp >= 0; i2++) el("line", { x1: ox - i2 * sp, x2: ox - i2 * sp, y1: 0, y2: H, "class": "map-grid" }, svg);
-        for (i2 = 0; H - oy - i2 * sp >= 0; i2++) el("line", { x1: 0, x2: W, y1: H - oy - i2 * sp, y2: H - oy - i2 * sp, "class": "map-grid" }, svg);
-        for (i2 = 1; H - oy + i2 * sp <= H; i2++) el("line", { x1: 0, x2: W, y1: H - oy + i2 * sp, y2: H - oy + i2 * sp, "class": "map-grid" }, svg);
+        for (i2 = 0; ox + i2 * sp <= W; i2++) el("line", { x1: ox + i2 * sp, x2: ox + i2 * sp, y1: 0, y2: Hm, "class": "map-grid" }, svg);
+        for (i2 = 1; ox - i2 * sp >= 0; i2++) el("line", { x1: ox - i2 * sp, x2: ox - i2 * sp, y1: 0, y2: Hm, "class": "map-grid" }, svg);
+        for (i2 = 0; Hm - oy - i2 * sp >= 0; i2++) el("line", { x1: 0, x2: W, y1: Hm - oy - i2 * sp, y2: Hm - oy - i2 * sp, "class": "map-grid" }, svg);
+        for (i2 = 1; Hm - oy + i2 * sp <= Hm; i2++) el("line", { x1: 0, x2: W, y1: Hm - oy + i2 * sp, y2: Hm - oy + i2 * sp, "class": "map-grid" }, svg);
 
         var cid = "clip-" + idx, cp = el("clipPath", { id: cid }, el("defs", {}, svg));
         el("rect", { x: 0, y: 0, width: W, height: H }, cp);
@@ -346,18 +347,62 @@
           return pl.lat >= la0 && pl.lat <= la1 && pl.lng >= ln0 && pl.lng <= ln1; });
         var mxn = Math.max.apply(null, inb.map(function (p) { return p.n; }).concat([1]));
         var named = inb.slice(0, 6);
-        inb.forEach(function (pl) {
-          var ni = named.indexOf(pl), r = ni >= 0 ? 12 + 6 * Math.sqrt(pl.n / mxn) : 3.5;
-          var g = el("g", {}, g0);
-          el("circle", { cx: X(pl.lng), cy: Y(pl.lat), r: r, "class": ni >= 0 ? "pin" : "pin-s" }, g);
-          if (ni >= 0) el("text", { x: X(pl.lng), y: Y(pl.lat) + 5, "text-anchor": "middle", "class": "pin-n" }, g)
-            .textContent = fa(ni + 1);
+        var tipFor = function (g, pl) {
           g.addEventListener("mousemove", function (e) { tipOn(e, "<b>" + fa(pl.n) + " بار</b><br>" + esc(pl.name)); });
           g.addEventListener("mouseleave", tipOff);
+        };
+        /* small places: plain dots */
+        inb.forEach(function (pl) {
+          if (named.indexOf(pl) >= 0) return;
+          var g = el("g", {}, g0);
+          el("circle", { cx: X(pl.lng), cy: Y(pl.lat), r: narrow ? 3 : 3.5, "class": "pin-s" }, g);
+          tipFor(g, pl);
+        });
+        /* numbered places: shrink when crowded, then push apart so no badge covers another */
+        var rMax = narrow ? 10 : 12, rMin = narrow ? 8 : 9, GAP = 3;
+        var nb = named.map(function (pl) {
+          var x = X(pl.lng), y = Y(pl.lat);
+          return { pl: pl, tx: x, ty: y, x: x, y: y, w: Math.sqrt(pl.n / mxn) };
+        });
+        var near = Infinity;
+        nb.forEach(function (a, i) { nb.forEach(function (b, j) {
+          if (j > i) near = Math.min(near, Math.hypot(a.tx - b.tx, a.ty - b.ty)); }); });
+        var fit = Math.max(rMin, Math.min(rMax, (near - GAP) / 2));
+        nb.forEach(function (n) { n.r = Math.max(rMin, Math.min(rMax, fit)) + (fit >= rMax ? (narrow ? 3 : 6) * n.w : 0); });
+        for (var it = 0; it < 120; it++) {
+          var moved = false;
+          for (var a = 0; a < nb.length; a++) for (var b = a + 1; b < nb.length; b++) {
+            var A = nb[a], B = nb[b], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy), need = A.r + B.r + GAP;
+            if (d < need) {
+              if (d < 0.01) { dx = Math.cos(a * 2.4); dy = Math.sin(a * 2.4); d = 1; }
+              var push = (need - d) / 2 + 0.05, ux = dx / d, uy = dy / d;
+              A.x -= ux * push; A.y -= uy * push; B.x += ux * push; B.y += uy * push; moved = true;
+            }
+          }
+          nb.forEach(function (n) {
+            n.x = Math.max(n.r + 2, Math.min(W - n.r - 2, n.x));
+            n.y = Math.max(n.r + 2, Math.min(Hm - n.r - 2, n.y));
+          });
+          if (!moved) break;
+        }
+        /* leader lines first, so badges sit on top */
+        nb.forEach(function (n) {
+          if (Math.hypot(n.x - n.tx, n.y - n.ty) > 2) {
+            el("line", { x1: n.tx, y1: n.ty, x2: n.x, y2: n.y, "class": "pin-lead" }, g0);
+            el("circle", { cx: n.tx, cy: n.ty, r: 2.6, "class": "pin-true" }, g0);
+          }
+        });
+        nb.forEach(function (n, ni) {
+          var g = el("g", {}, g0);
+          el("circle", { cx: n.x, cy: n.y, r: n.r, "class": "pin" }, g);
+          var tx = el("text", { x: n.x, y: n.y + n.r * 0.38, "text-anchor": "middle", "class": "pin-n" }, g);
+          tx.style.fontSize = Math.round(n.r * 1.15) + "px";
+          tx.textContent = fa(ni + 1);
+          tipFor(g, n.pl);
         });
         /* scale bar: a labelled ruler in the corner */
         var sbx = 26, sby = H - 22, sbw = step * pxKm, bw = Math.max(sbw + 24, 150);
-        el("rect", { x: sbx - 14, y: sby - 46, width: bw + 8, height: 62, rx: 10, "class": "map-sb" }, svg);
+        el("line", { x1: 0, x2: W, y1: Hm, y2: Hm, "class": "map-grid" }, svg);
         el("text", { x: sbx, y: sby - 22, "class": "map-sbt", direction: "ltr", "text-anchor": "start" }, svg)
           .textContent = "مقیاس: " + fa(step) + " کیلومتر";
         el("line", { x1: sbx, x2: sbx + sbw, y1: sby, y2: sby, "class": "map-sbl" }, svg);
