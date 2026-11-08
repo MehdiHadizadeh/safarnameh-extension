@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "سفرنامه | گزارش سفرهای اسنپ",
   "short_name": "سفرنامه",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "تاریخچهٔ سفرهای اسنپ‌ات را بدون کنسول می‌گیرد و در همین مرورگر گزارش می‌سازد. هیچ دیتایی ذخیره یا ارسال نمی‌شود.",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": ["https://app.snapp.taxi/*"],

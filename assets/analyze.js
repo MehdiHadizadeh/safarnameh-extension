@@ -201,7 +201,8 @@
     var ok = rows.filter(function (r) { return r.ok; });
     if (!ok.length) throw new Error("سفر موفقی در این فایل نیست.");
 
-    var C = clusterStops(rows, opts.radiusM || 150);
+    /* 200 m: Snapp's own jitter plus pick-up spots on opposite sides of one street are the same place */
+    var C = clusterStops(rows, opts.radiusM || 200);
     var keyOf = function (r) { return r.path.map(C.of).join(">"); };
 
     /* corridors (direction-insensitive) and directed routes */
@@ -242,6 +243,8 @@
             stops: k.split(sep).map(function (i) { return C.label[+i]; }),
             km: +median(list.map(function (r) { return r.km || 0; })).toFixed(1),
             years: yearly(list),
+            /* periods with a single ride say nothing about a fare: keep only n >= 2 for comparisons */
+            solid: yearly(list).filter(function (y) { return y.n >= 2; }),
             multi: k.split(sep).length > 2
           };
         });
@@ -250,13 +253,14 @@
     var routes = pack(byRoute, ">", 6);
 
     /* headline: busiest corridor, compared on yearly medians */
-    var th = corridors[0] || routes[0];
-    var years = th.years.filter(function (y) { return y.n >= 3; });
-    if (years.length < 2) years = th.years;
-    var thesis = {
-      stops: th.stops, km: th.km, n: th.n, years: years,
-      mult: years[0].med > 0 ? +(years[years.length-1].med / years[0].med).toFixed(1) : 0
-    };
+    /* Only a route ridden at least 4 times, with 2+ periods of 2+ rides each, can carry a
+       fare story. Otherwise there is no headline route (the report hides that block). */
+    var th = corridors.concat(routes).filter(function (c) { return c.n >= 4 && c.solid.length >= 2; })
+      .sort(function (a, b) { return b.n - a.n; })[0];
+    var thesis = th ? {
+      stops: th.stops, km: th.km, n: th.n, years: th.solid,
+      mult: th.solid[0].med > 0 ? +(th.solid[th.solid.length-1].med / th.solid[0].med).toFixed(1) : 0
+    } : null;
 
     /* price per km, quarterly medians, city rides only */
     var byQ = Object.create(null);
@@ -487,8 +491,41 @@
     }).filter(function (a) { return a.paths.length > 2; });
   }
 
+  /* Snapp sells many service names (اسنپ, اسنپ بایک, بایک پلاس, بین شهری...). For the reader there
+     are two kinds of ride: on a motorbike, or in a car. Intercity and the rest are car rides. */
+  var BIKE = "بایک", CAR = "خودرو";
+  function serviceGroup(name) {
+    return /بایک|موتور|bike/i.test(String(name || "")) ? BIKE : CAR;
+  }
+
+  /* Per-group comparison over whatever rides it is given. Fare figures use city rides only
+     (under 30 km straight line), so a few intercity trips cannot drag the car median up. */
+  function serviceStats(input) {
+    var ok = extractRides(input).map(toRow).filter(function (r) { return r && r.ok; });
+    var by = Object.create(null);
+    ok.forEach(function (r) { var k = serviceGroup(r.service); (by[k] = by[k] || []).push(r); });
+    return Object.keys(by).map(function (k) {
+      var list = by[k];
+      var city = list.filter(function (r) { return !r.km || r.km <= 30; });
+      var kms = city.filter(function (r) { return r.km; }).map(function (r) { return r.km; });
+      var per = city.filter(function (r) { return r.km >= 1 && r.price > 0; })
+                    .map(function (r) { return r.price / r.km; });
+      var parts = Object.create(null);
+      list.forEach(function (r) { var n = r.service || "نامشخص"; parts[n] = (parts[n] || 0) + 1; });
+      return {
+        name: k, n: list.length, share: Math.round(100 * list.length / ok.length),
+        total: Math.round(sum(list.map(function (r) { return r.price; }))),
+        median: city.length ? Math.round(median(city.map(function (r) { return r.price; }))) : null,
+        perKm: per.length >= 3 ? Math.round(median(per)) : null,
+        avgKm: kms.length ? +mean(kms).toFixed(1) : null,
+        far: list.length - city.length,
+        parts: topPairs(parts)
+      };
+    }).sort(function (a, b) { return b.n - a.n; });
+  }
+
   root.SnappAnalyze = {
-    analyze: analyze, extractRides: extractRides, g2j: g2j,
+    analyze: analyze, serviceStats: serviceStats, serviceGroup: serviceGroup, extractRides: extractRides, g2j: g2j,
     JM: JM, SEASON: SEASON, km: km, median: median
   };
 })(typeof window !== "undefined" ? window : globalThis);

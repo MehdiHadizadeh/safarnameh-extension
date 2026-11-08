@@ -166,7 +166,10 @@
     })();
 
     /* ── thesis tape ──────────────────────── */
-    var TH = M.thesis, yrs = TH.years;
+    (function () {
+    var TH = M.thesis, yrs = TH && TH.years;
+    document.querySelector(".thesis").hidden = !TH;
+    if (!TH) return;
     document.getElementById("thesis-h").textContent = "یک مسیر ثابت، " + fa(TH.n) + " بار";
     document.getElementById("route-desc").textContent =
       TH.stops.map(cityless).join(" ↔ ") + " · " + fa(dec(TH.km)) + " کیلومتر · هر دو جهت";
@@ -187,11 +190,13 @@
       if (last) b.className = "hot";
       bars.appendChild(b);
     });
+    var ik = M.infl.length > 1 ? ratio(M.infl[M.infl.length-1].v, M.infl[0].v) : 0;
     document.getElementById("thesis-cap").innerHTML =
       "کرایهٔ معمولی (میانه) در هر سال یا فصل، روی " + fa(TH.n) + " سفر. کرایهٔ این مسیر " +
-      fa(dec(TH.mult.toFixed(1))) + " برابر شده، ولی تومان بر کیلومتر در کل سفرها در همین مدت " +
-      fa(dec(ratio(M.infl[M.infl.length-1].v, M.infl[0].v).toFixed(1))) +
-      " برابر؛ یعنی گرانی همه‌جا یکسان نبوده.";
+      fa(dec(TH.mult.toFixed(1))) + " برابر شده" + (ik
+        ? "، ولی تومان بر کیلومتر در کل سفرها در همین مدت " + fa(dec(ik.toFixed(1))) + " برابر؛ یعنی گرانی همه‌جا یکسان نبوده."
+        : ".");
+    })();
 
     /* ── stats ────────────────────────────── */
     var road = Math.round(M.dist.straight * M.dist.factor);
@@ -271,13 +276,13 @@
 
     /* ── corridors ────────────────────────── */
     (function () {
-      var rs = M.corridors.filter(function (r) { return r.years.length > 1; });
+      var rs = M.corridors.filter(function (r) { return r.n >= 4 && r.solid.length > 1; });
       var box = clear("baskets");
-      if (!rs.length) { box.appendChild(div("cap", "مسیر تکراری کافی برای مقایسه پیدا نشد.")); return; }
+      if (!rs.length) { box.appendChild(div("cap", "مسیری که چند بار و در چند دورهٔ مختلف رفته باشی پیدا نشد، پس مقایسهٔ کرایه‌ای نداریم.")); return; }
       var mx = Math.max.apply(null, rs.reduce(function (a, r) {
-        return a.concat(r.years.map(function (y) { return y.med; })); }, []));
+        return a.concat(r.solid.map(function (y) { return y.med; })); }, []));
       rs.forEach(function (r) {
-        var a = r.years[0], b = r.years[r.years.length-1];
+        var a = r.solid[0], b = r.solid[r.solid.length-1];
         box.appendChild(div("basket",
           '<div class="b-name">' + r.stops.map(function (t) { return esc(cityless(t)); }).join(" ↔ ") +
             '<em>' + fa(dec(r.km)) + ' کیلومتر</em></div>' +
@@ -607,8 +612,9 @@
     el("text", { x: L-8, y: T+10, "class": "axis", "text-anchor": "end" }, svg).textContent = fa(mx);
   }
 
-  /* Date range: filter the rides in memory and re-analyse. Nothing is stored. */
+  /* Date range + service: filter the rides in memory and re-analyse. Nothing is stored. */
   var RANGES = [["all", "کل بازه", 0], ["6m", "۶ ماه اخیر", 183], ["3m", "۳ ماه اخیر", 91], ["1m", "ماه اخیر", 30]];
+  var MIN_RIDES = 8, MIN_SVC = 5;
   function renderData(data, isDemo) {
     var rides = Array.isArray(data) ? data : (data && data.rides) || null;
     var life = data && !Array.isArray(data) ? data.lifetime : null;
@@ -616,34 +622,82 @@
     if (!rides || !box) { render(A.analyze(data), isDemo); return; }
     var latest = 0;
     rides.forEach(function (r) { var t = Date.parse(String(r.created_at).replace(" ", "T")); if (t > latest) latest = t; });
-    function subset(days) {
+    var svcOf = function (r) { return A.serviceGroup(r.service_type_name); };
+    function inRange(days) {
       if (!days) return rides;
       var cut = latest - days * 86400000;
       return rides.filter(function (r) { return Date.parse(String(r.created_at).replace(" ", "T")) >= cut; });
     }
-    var current = "all";
+    function subset(days, svc) {
+      var list = inRange(days);
+      return svc === "all" ? list : list.filter(function (r) { return svcOf(r) === svc; });
+    }
+    /* chips count finished rides, the same number the cards below show (cancelled requests are not trips) */
+    var done = function (list) { return list.filter(function (r) { return r.latest_ride_status === 5; }); };
+    var curRange = RANGES[0], curSvc = "all";
+
+    function chip(parent, label, count, pressed, onclick) {
+      var b = document.createElement("button");
+      b.type = "button"; b.setAttribute("aria-pressed", String(pressed));
+      b.innerHTML = esc(label) + "<small>" + fa(count) + " سفر</small>";
+      b.onclick = onclick; parent.appendChild(b);
+    }
     function paint() {
       box.innerHTML = "";
       box.appendChild(div("range-l", "بازهٔ گزارش"));
       RANGES.forEach(function (rg) {
-        var n = subset(rg[2]).length;
-        if (rg[0] !== "all" && (n < 8 || n === rides.length)) return;
-        var b = document.createElement("button");
-        b.type = "button"; b.setAttribute("aria-pressed", String(rg[0] === current));
-        b.innerHTML = rg[1] + "<small>" + fa(n) + " سفر</small>";
-        b.onclick = function () { apply(rg[0], rg[2]); };
-        box.appendChild(b);
+        var n = done(subset(rg[2], curSvc)).length;
+        if (rg[0] !== "all" && (n < MIN_RIDES || n === done(subset(0, curSvc)).length)) return;
+        chip(box, rg[1], n, rg[0] === curRange[0], function () { apply(rg, curSvc); });
+      });
+      /* a service filter is only worth showing when two or more real services exist */
+      var all = inRange(curRange[2]), count = Object.create(null);
+      done(all).forEach(function (r) { var k = svcOf(r); count[k] = (count[k] || 0) + 1; });
+      var names = Object.keys(count).filter(function (k) { return count[k] >= MIN_SVC || k === curSvc; })
+        .sort(function (a, b) { return count[b] - count[a]; });
+      var sf = document.getElementById("svc-filter");
+      sf.innerHTML = ""; sf.hidden = names.length < 2;
+      if (names.length < 2) return;
+      sf.appendChild(div("range-l", "سرویس"));
+      chip(sf, "همه", done(all).length, curSvc === "all", function () { apply(curRange, "all"); });
+      names.forEach(function (k) {
+        chip(sf, k, count[k], curSvc === k, function () { apply(curRange, k); });
       });
     }
-    function apply(key, days) {
-      var model;
-      try { model = A.analyze({ rides: subset(days), lifetime: life }); render(model, isDemo); }
-      catch (e) { var note = document.getElementById("range-note"); if (note) { note.hidden = false; note.textContent = "برای این بازه سفر کافی نیست. بازهٔ بزرگ‌تری انتخاب کن."; }
-        return; }
-      var nt = document.getElementById("range-note"); if (nt) nt.hidden = true;
-      current = key; paint();
+    function paintServices() {
+      var sec = document.getElementById("sec-services"), list = clear("svcs");
+      var st = A.serviceStats({ rides: inRange(curRange[2]) });
+      sec.hidden = st.length < 2;
+      if (st.length < 2) return;
+      st.forEach(function (x) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "svc"; b.setAttribute("aria-pressed", String(curSvc === x.name));
+        b.innerHTML =
+          '<span class="svc-h"><b>' + esc(x.name) + '</b><span>' + fa(x.n) + ' سفر · ' + fa(x.share) + '٪</span></span>' +
+          '<span class="svc-bar"><i style="width:' + Math.max(3, x.share) + '%"></i></span>' +
+          '<span class="svc-g">' +
+            '<span><small>خرج کل</small><b>' + money(x.total) + ' <em>تومان</em></b></span>' +
+            '<span><small>کرایهٔ معمولی</small><b>' + (x.median ? money(x.median) + ' <em>تومان</em>' : "–") + '</b></span>' +
+            '<span><small>هر کیلومتر</small><b>' + (x.perKm ? money(x.perKm) + ' <em>تومان</em>' : "–") + '</b></span>' +
+            '<span><small>میانگین مسیر</small><b>' + (x.avgKm ? fa(dec(x.avgKm)) + ' <em>کیلومتر</em>' : "–") + '</b></span>' +
+          '</span>' +
+          (x.parts.length > 1 ? '<span class="svc-p">شامل: ' + x.parts.map(function (p) { return esc(p[0]) + " " + fa(p[1]); }).join("، ") + '</span>' : "");
+        b.onclick = function () { apply(curRange, curSvc === x.name ? "all" : x.name); };
+        list.appendChild(b);
+      });
+      document.getElementById("svc-cap").textContent =
+        "کرایهٔ معمولی، تومان بر کیلومتر و میانگین مسیر فقط روی سفرهای شهری (زیر ۳۰ کیلومتر) حساب شده تا چند سفر بین‌شهری عددها را بالا نبرد. تومان بر کیلومتر روی خط مستقیم است؛ برای مقایسهٔ این دو خوب است، نه برای قیمت واقعی هر کیلومتر.";
     }
-    apply("all", 0);
+    function apply(rg, svc) {
+      var note = document.getElementById("range-note");
+      try { render(A.analyze({ rides: subset(rg[2], svc), lifetime: svc === "all" ? life : null }), isDemo); }
+      catch (e) { if (note) { note.hidden = false; note.textContent = "برای این انتخاب سفر کافی نیست. بازه یا سرویس بزرگ‌تری انتخاب کن."; }
+        return; }
+      curRange = rg; curSvc = svc;
+      if (note) { note.hidden = svc === "all"; if (svc !== "all") note.textContent = "فقط سفرهای «" + svc + "»"; }
+      paint(); paintServices();
+    }
+    apply(RANGES[0], "all");
   }
   root.SnappReport = { render: render, renderData: renderData, fa: fa, money: money };
 })(window);

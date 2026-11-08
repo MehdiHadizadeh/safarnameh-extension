@@ -38,3 +38,25 @@ test("prototype-like keys in untrusted strings do not corrupt counts", () => {
 test("input with no usable rides throws", () => {
   assert.throws(() => A.analyze({ rides: [] }));
 });
+
+test("serviceStats folds Snapp service names into car and bike, finished rides only", () => {
+  const rides = [
+    ...[1, 2, 3, 4].map((i) => ride(i, `2025-05-0${i} 10:00:00`, { service_type_name: "اسنپ", final_price: 400000 })),
+    ride(5, "2025-05-05 10:00:00", { service_type_name: "بین شهری", final_price: 400000 }),
+    ...[6, 7].map((i) => ride(i, `2025-05-0${i} 10:00:00`, { service_type_name: i === 6 ? "اسنپ بایک" : "اسنپ بایک پلاس", final_price: 200000 })),
+    ride(8, "2025-05-08 10:00:00", { service_type_name: "اسنپ بایک", latest_ride_status: 6 }),
+    ride(9, "2025-05-09 10:00:00", { final_price: 100000 }),
+  ];
+  const s = A.serviceStats({ rides });
+  assert.deepStrictEqual(s.map((x) => [x.name, x.n]), [["خودرو", 6], ["بایک", 2]]);
+  assert.strictEqual(s[1].total, 40000);
+  assert.strictEqual(s[1].perKm, null, "fewer than 3 rides: no per-km figure");
+  assert.strictEqual(A.serviceGroup("اسنپ بایک پلاس"), "بایک");
+  assert.strictEqual(A.serviceGroup(undefined), "خودرو");
+});
+
+test("a route ridden once or twice never becomes the headline route", () => {
+  const far = { origin: { lat: 35.7, lng: 51.4, formatted_address: "شهر تهران، الف" }, destination: { lat: 35.9, lng: 51.9, formatted_address: "شهر تهران، ج" } };
+  const rides = [1, 2].map((i) => ride(i, `2025-05-0${i} 10:00:00`)).concat([3].map((i) => ride(i, "2025-09-03 10:00:00", far)));
+  assert.strictEqual(A.analyze({ rides }).thesis, null);
+});
