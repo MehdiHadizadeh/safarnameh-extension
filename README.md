@@ -75,6 +75,7 @@ git tag v0.1.1 && git push origin v0.1.1
 
 ```
 index.html            صفحهٔ فرود و اسکلت گزارش
+assets/style.css      استایل و توکن‌های رنگ (روشن/تیره، سبز اسنپ + سرمه‌ای + نیلی)
 assets/analyze.js     موتور تحلیل، توابع خالص و بدون DOM
 assets/report.js      نمایش مدل توی گزارش
 assets/collector.js   اسکریپت کنسول

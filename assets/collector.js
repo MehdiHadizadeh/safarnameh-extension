@@ -86,12 +86,12 @@ const SITE = ${JSON.stringify(siteUrl)}, O = new URL(SITE).origin, d = document;
 if (!${opts.skipHostCheck ? "true" : "false"} && location.hostname != 'app.snapp.taxi') { alert('اول app.snapp.taxi/ride-history را باز کن و وارد شو.'); return; }
 const bar = d.createElement('div'), txt = d.createElement('div'), row = d.createElement('div');
 bar.dir = 'rtl';
-bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#0b4a57;color:#fff;font:15px/1.7 system-ui,sans-serif;padding:14px 16px;box-shadow:0 -6px 24px #0006';
+bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#252a3c;color:#fff;font:15px/1.7 system-ui,sans-serif;padding:14px 16px;box-shadow:0 -6px 24px #0006';
 row.style.cssText = 'display:flex;gap:8px;margin-top:10px';
 bar.append(txt, row); d.body.append(bar);
 const say = m => { txt.textContent = m; };
 const btn = (l, f, main) => { const b = d.createElement('button'); b.textContent = l; b.onclick = f;
-  b.style.cssText = 'flex:1;min-height:46px;border:0;border-radius:12px;font:700 15px system-ui,sans-serif;color:#241600;background:' + (main ? '#f4a300' : '#fff'); row.append(b); };
+  b.style.cssText = 'flex:1;min-height:46px;border:0;border-radius:12px;font:700 15px system-ui,sans-serif;color:#06230f;background:' + (main ? '#22a958' : '#fff'); row.append(b); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const jwt = /^(Bearer\s+)?eyJ[\w-]+\.[\w-]+\.[\w-]+$/, found = [];
 for (const s of [localStorage, sessionStorage]) for (let i = 0; i < s.length; i++) {

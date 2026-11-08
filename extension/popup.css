@@ -1,10 +1,10 @@
 @font-face{font-family:"Vazirmatn"; font-weight:100 900; font-display:swap; src:url("assets/fonts/Vazirmatn-var.woff2") format("woff2")}
 :root{color-scheme:light dark;
-  --bg:#f1f5f4; --card:#ffffff; --ink:#0c1f26; --ink-2:#34474f; --muted:#52696f; --rule:#c8d6d6;
-  --btn:#0b4a57; --btn-fg:#fff; --btn-hover:#0e6070; --amber:#f4a300; --ok:#0b7a4b; --crit:#c0392b}
+  --bg:#f3f5fc; --card:#ffffff; --ink:#252a3c; --ink-2:#3d4358; --muted:#5a6075; --rule:#cfd3e6;
+  --btn:#0d7a55; --btn-fg:#fff; --btn-hover:#0a6445; --amber:#0d7a55; --ok:#0b7a50; --crit:#c62f3a}
 @media (prefers-color-scheme: dark){:root{
-  --bg:#091317; --card:#12232a; --ink:#eef7f8; --ink-2:#bfd5d9; --muted:#93b1b7; --rule:#27414a;
-  --btn:#ffb52e; --btn-fg:#2a1a00; --btn-hover:#ffc65a; --ok:#4fd6a0; --crit:#ff8f80}}
+  --bg:#0f131f; --card:#1a2036; --ink:#f2f4ff; --ink-2:#d3d7f0; --muted:#a9b0d6; --rule:#444b6e;
+  --btn:#4de3a6; --btn-fg:#06230f; --btn-hover:#7af0c0; --amber:#4de3a6; --ok:#4de3a6; --crit:#ff9aa3}}
 *{box-sizing:border-box}
 body{margin:0; width:340px; padding:18px 18px 16px; background:var(--bg); color:var(--ink);
   font:14.5px/1.7 Vazirmatn,Tahoma,"Segoe UI",system-ui,sans-serif; display:flex; flex-direction:column; gap:14px}

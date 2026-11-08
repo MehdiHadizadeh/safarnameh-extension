@@ -474,14 +474,14 @@
       var g = clear("heat");
       var mx = Math.max.apply(null, M.mat.map(function (r) {
         return Math.max.apply(null, r); }));
-      var steps = ["--q1","--q2","--q3","--q4","--q5","--q6"];
+      var steps = ["--h1","--h2","--h3","--h4","--h5"];
       g.appendChild(document.createElement("div"));
       for (var h = 0; h < 24; h++) g.appendChild(div("cl", h % 3 === 0 ? fa(h) : ""));
       M.mat.forEach(function (row, d) {
         g.appendChild(div("rl", DAYS[d]));
         row.forEach(function (v, hh) {
           var c = div("cell");
-          if (v > 0) c.style.background = "var(" + steps[Math.min(5, Math.floor(v/mx*5.999))] + ")";
+          if (v > 0) c.style.background = "var(" + steps[Math.min(4, Math.floor(Math.sqrt(v/mx)*4.999))] + ")";
           c.addEventListener("mousemove", function (e) {
             tipOn(e, "<b>" + DAYS[d] + " ساعت " + fa(hh) + "</b><br>" + fa(v) + " سفر"); });
           c.addEventListener("mouseleave", tipOff);
@@ -512,7 +512,7 @@
       s.forEach(function (d, i) {
         var h = ih * d.total / mx, last = i === s.length-1;
         el("rect", { x: L+i*bw+1, y: T+ih-h, width: Math.max(1, bw-2), height: h,
-          fill: last ? "var(--q3)" : "var(--s1)", rx: 2 }, svg);
+          fill: last ? "var(--part)" : "var(--s1)", rx: 2 }, svg);
         if (/-01$/.test(d.m)) {
           el("text", { x: L+i*bw+bw/2, y: H-B+18, "class": "axis", "text-anchor": "middle" }, svg)
             .textContent = fa(d.m.slice(0, 4));
