@@ -25,9 +25,10 @@
   <!-- ══ landing ══════════════════════════════════════════ -->
   <div id="landing">
 
+    <p class="note slim" id="recv" role="status" hidden>در حال گرفتن سفرها از اسنپ…</p>
     <nav class="topbar" aria-label="سفرنامه">
       <span class="mark">سفرنامه</span>
-      <a href="#extension">افزونه</a><a href="#start">با کنسول</a>
+      <a href="#extension">افزونه</a><a href="#start">با کنسول</a><a href="#phone">با گوشی</a>
     </nav>
 
     <header class="hero">
@@ -67,13 +68,13 @@
       <div class="ext-copy">
         <span class="ext-tag">راه ساده‌تر</span>
         <h2>افزونهٔ کروم: بدون کنسول، با یک کلیک</h2>
-        <p>کنسول بلد نیستی؟ افزونه همین کار را برایت می‌کند. وارد اسنپ می‌شوی، روی آیکن می‌زنی و گزارش توی یک تب جدید باز می‌شود.</p>
+        <p>روی کامپیوتر هستی؟ افزونه کل کار را برایت انجام می‌دهد. وارد اسنپ می‌شوی، روی آیکن می‌زنی و گزارش توی یک تب جدید باز می‌شود.</p>
         <ol class="ext-steps">
           <li><b>نصب:</b> فایل zip را از Releases گیت‌هاب بگیر و از حالت فشرده دربیار. بعد <bdi dir="ltr"><code>chrome://extensions</code></bdi> را باز کن، <bdi dir="ltr">Developer mode</bdi> را روشن کن و با <bdi dir="ltr">Load unpacked</bdi> همان پوشه را انتخاب کن.</li>
           <li><b>اسنپ:</b> <a href="https://app.snapp.taxi/ride-history" target="_blank" rel="noopener">app.snapp.taxi/ride-history</a> را باز کن و وارد شو.</li>
           <li><b>کلیک:</b> روی آیکن سفرنامه بزن و «ساخت گزارش».</li>
         </ol>
-        <p class="fine">فعلاً در فروشگاه کروم نیست. دسترسی‌اش فقط به <span class="mono" dir="ltr">app.snapp.taxi</span> است، چیزی ذخیره نمی‌کند و جایی نمی‌فرستد.</p>
+        <p class="fine">فعلاً در فروشگاه کروم نیست. فقط روی صفحهٔ اسنپ کار می‌کند و چیزی ذخیره یا ارسال نمی‌کند.</p>
         <a class="btn primary" id="ext-dl" href="#" hidden>دانلود افزونه</a>
       </div>
       <div class="ext-pop" aria-hidden="true">
@@ -83,9 +84,10 @@
       </div>
     </section>
 
+
     <section id="start" class="flow">
-      <h2>یا با کنسول: سه قدم، حدود دو دقیقه</h2>
-      <p class="note"><b>فقط با لپ‌تاپ یا کامپیوتر.</b> مرورگر موبایل کنسول ندارد. اگر روی گوشی هستی، گزارش نمونه را همین‌جا ببین و بعد صفحه را روی کامپیوتر باز کن.</p>
+      <h2>یا با کنسول: سه قدم</h2>
+      <p class="note"><b>این راه برای کامپیوتر است.</b> مرورگر موبایل کنسول ندارد؛ اگر روی گوشی هستی، <a href="#phone">راه گوشی</a> را ببین.</p>
 
       <ol class="steps">
         <li class="step">
@@ -127,6 +129,40 @@
       </ol>
     </section>
 
+    <section id="phone" class="flow">
+      <h2>روی گوشی هم می‌شود</h2>
+      <p class="lede">با گوشی هم می‌شود. یک بوکمارک می‌سازی و بعدش هر بار فقط چند لمس لازم است. فقط روی کروم امتحان شده.</p>
+
+      <ol class="steps">
+        <li class="step"><span class="num">۱</span><div class="body"><h3>کد را کپی کن</h3>
+          <button class="btn primary copy-main" id="bm-copy" type="button">کپی کد گوشی</button>
+          <textarea id="bm-text" class="bm-text mono" readonly rows="3" hidden aria-label="کد بوکمارک"></textarea>
+          <p class="cap">این کد فقط سفرهای خودت را از <span class="mono" dir="ltr">app.snapp.taxi</span> می‌خواند. کد را فقط از همین سایت کپی کن.</p>
+          <p class="err" id="bm-warn" role="alert" hidden>این نسخه از سایت رسمی نیست، پس کد گوشی را اینجا نمی‌دهم. آن را فقط از <span class="mono" dir="ltr">mehdihadizadeh.github.io/safarnameh-extension</span> بگیر.</p></div></li>
+
+        <li class="step"><span class="num">۲</span><div class="body"><h3>یک بوکمارک بساز</h3>
+          <p>همین صفحه را بوکمارک کن (منوی ⋮ و بعد ☆). بعد همان بوکمارک را ویرایش کن: اسمش را «سفرنامه» بگذار و آدرسش را پاک کن و کدِ کپی‌شده را بچسبان.</p>
+          <p class="cap">ویرایش بوکمارک را بلد نیستی؟ <a href="https://support.google.com/chrome/answer/188842?hl=fa&co=GENIE.Platform%3DAndroid" target="_blank" rel="noopener">راهنمای گوگل</a></p></div></li>
+
+        <li class="step"><span class="num">۳</span><div class="body"><h3>اسنپ را باز کن و اجرا کن</h3>
+          <p><a href="https://app.snapp.taxi/ride-history" target="_blank" rel="noopener">app.snapp.taxi/ride-history</a> را توی همان کروم باز کن و وارد شو. بعد توی نوار آدرس بنویس «سفرنامه» و روی پیشنهادِ ستاره‌دار بزن.</p>
+          <figure class="shots" aria-label="شکل دو مرحله: نوشتن اسم بوکمارک در نوار آدرس، و نوار پایین صفحه بعد از جمع‌آوری">
+            <div class="shot" aria-hidden="true">
+              <div class="sh-bar">سفرنامه</div>
+              <div class="sh-sug on"><i>★</i><span>سفرنامه</span></div>
+              <div class="sh-sug dim"><i>⌕</i><span>app.snapp.taxi</span></div>
+              <b class="sh-tap">۱. این را بزن</b>
+            </div>
+            <div class="shot" aria-hidden="true">
+              <div class="sh-page"></div>
+              <div class="sh-dock"><span>✓ ۱۷۵ سفر جمع شد</span><span class="sh-go">نمایش گزارش</span></div>
+              <b class="sh-tap">۲. بعد این</b>
+            </div>
+          </figure>
+          <p class="cap">نوار پایین صفحه پیشرفت را نشان می‌دهد. وقتی تمام شد «نمایش گزارش» را بزن. اگر تب جدید باز نشد، «ذخیرهٔ فایل» را بزن و فایل را همین‌جا رها کن.</p></div></li>
+      </ol>
+    </section>
+
     <section class="trustband">
       <h2>چرا لازم نیست نگران باشی</h2>
       <div class="tb-grid">
@@ -150,6 +186,10 @@
         <details>
           <summary>اسنپ با این کار مشکلی ندارد؟</summary>
           <p>نمی‌دانیم. کد همان درخواستی را می‌زند که خود اپ می‌زند، با نشست خودت، و فقط سفرهای خودت را می‌گیرد. ولی شرایط استفادهٔ اسنپ ممکن است دسترسی خودکار را محدود کرده باشد، پس خودت هم بخوانش. کد عمداً آرام می‌رود تا فشاری به سرویس نیاید.</p>
+        </details>
+        <details>
+          <summary>کد گوشی امن است؟</summary>
+          <p>کدی که روی گوشی اجرا می‌کنی از همان مدل کنسول است: توکن نشست را فقط برای درخواست به خود اسنپ می‌خواند و جایی نمی‌فرستد. از هر سفر فقط چیزهایی که گزارش لازم دارد (مبلغ، زمان، مبدأ و مقصد، ماشین، نام راننده) به سایت می‌رسد؛ عکس راننده و لینک رسید نمی‌رود. دادهٔ شما را فقط وقتی دکمهٔ «نمایش گزارش» را بزنی و فقط به آدرس همین سایت می‌فرستد. ریسک اصلی این است که کد را از جای نامطمئن کپی کنی، چون هر کدی که روی صفحهٔ اسنپ اجرا شود به نشست تو دسترسی دارد. پس فقط از آدرس رسمی کپی کن.</p>
         </details>
         <details>
           <summary>کد به چه چیزی دست می‌زند؟</summary>

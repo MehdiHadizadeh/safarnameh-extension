@@ -43,6 +43,53 @@
     }
   });
 
+  /* phone bookmarklet: the page on app.snapp.taxi hands over the rides with postMessage. Only that origin is trusted. */
+  var SNAPP_ORIGIN = "https://app.snapp.taxi", recv = document.getElementById("recv");
+  /* The phone code carries the address of the site it was copied from and sends the rides there. So it is only
+     offered on the official site (or a local dev server), never on a mirror or a copy. A fork changes OFFICIAL. */
+  var OFFICIAL = "https://mehdihadizadeh.github.io";
+  var isLoopback = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  /* testing from a phone on the same Wi-Fi needs the PC's address: allowed only with ?dev in the URL, on private addresses */
+  var isLan = /^(10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)$/.test(location.hostname) && /[?&]dev(&|$)/.test(location.search);
+  var isLocal = isLoopback || isLan;
+  var trusted = location.origin === OFFICIAL || isLocal;
+  var siteUrl = function () { return location.origin + location.pathname.replace(/[^\/]*$/, ""); };
+  var bmBtn = document.getElementById("bm-copy"), bmText = document.getElementById("bm-text");
+  if (location.protocol === "file:") document.getElementById("phone").hidden = true;
+  if (!trusted) {
+    bmBtn.disabled = true;
+    var warn = document.getElementById("bm-warn");
+    warn.hidden = false;
+  }
+  bmBtn.addEventListener("click", function () {
+    if (!trusted) return;
+    /* only %, # and line breaks must be escaped; the rest stays readable and short (Persian text would triple in size) */
+    var code = "javascript:" + window.SNAPP_MOBILE(siteUrl()).replace(/[%#\r\n]/g, function (c) { return "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"); });
+    function done() { bmBtn.textContent = "کپی شد ✓"; bmBtn.classList.add("done");
+      setTimeout(function () { bmBtn.textContent = "کپی کد گوشی"; bmBtn.classList.remove("done"); }, 2000); }
+    function manual() { bmText.value = code; bmText.hidden = false; bmText.focus(); bmText.select();
+      try { if (document.execCommand("copy")) done(); } catch (e) {} }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, manual);
+    else manual();
+  });
+  window.addEventListener("message", function (e) {
+    /* three checks: sent by app.snapp.taxi, by the very tab that opened this one, and shaped like ride history */
+    if (e.origin !== SNAPP_ORIGIN || !window.opener || e.source !== window.opener) return;
+    if (!e.data || e.data.type !== "safarnameh-rides") return;
+    var d = e.data.data;
+    if (!d || !Array.isArray(d.rides) || d.rides.length > 20000) return;
+    recv.hidden = true; show(d, false);
+    /* done with the other tab: cut the link so nothing here can steer it */
+    try { window.opener = null; } catch (err2) {}
+  });
+  if (location.hash === "#from-snapp") {
+    recv.hidden = false;
+    try { if (window.opener) window.opener.postMessage({ type: "safarnameh-ready" }, SNAPP_ORIGIN); } catch (e) {}
+    setTimeout(function () {
+      if (!recv.hidden) recv.textContent = "چیزی نرسید. به تب اسنپ برگرد و «ذخیرهٔ فایل» را بزن، بعد فایل را اینجا رها کن.";
+    }, 20000);
+  }
+
   var err = document.getElementById("err");
   function fail(msg) { err.textContent = msg; err.hidden = false; }
 
