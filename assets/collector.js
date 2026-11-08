@@ -71,65 +71,82 @@ window.SNAPP_COLLECTOR = String.raw`/* گزارش سفرهای اسنپ: جمع�
   console.log('فایل ذخیره شد. حالا آن را در سایت رها کن.');
 })();`;
 
-/* Phone version of the same collector, built from the console script so there is one source of truth.
-   It runs as a bookmarklet on app.snapp.taxi. Differences: it shows progress in a bar at the bottom of
-   the page, and hands the rides to the report site with postMessage when the visitor taps the button
-   (a tap is needed: browsers block a window opened after a long async wait). The site only accepts
-   the message from https://app.snapp.taxi. */
+/* Phone version of the collector, written compactly on purpose: it lives inside a bookmark, and Chrome on
+   Android stops running bookmarks whose URL gets long (the first, longer builds did nothing). Same logic as the
+   console script above (token from page storage, same API, same paging and retry rules), plus:
+   - a bar at the bottom of the page for progress and buttons
+   - only the fields the report reads are kept (no driver photo, receipt or map links)
+   - the rides go to the report site with postMessage, only when the visitor taps the button
+     (a tap is needed: browsers block a window opened after a long wait).
+   The site accepts the message only from https://app.snapp.taxi. */
 window.SNAPP_MOBILE = function (siteUrl, opts) {
   opts = opts || {};
-  var core = window.SNAPP_COLLECTOR
-    .replace(/^\/\*[\s\S]*?\*\/\s*/, "")
-    .replace(/^\s*\/\/.*$/gm, "")
-    .replace(/console\.log\(/g, "say(");
-  var head = "(async () => {";
-  var cut = core.indexOf("  const blob");
-  var tail = "\n} catch (e) { alert('خطا در سفرنامه: ' + (e && e.message)); } })();";
-  var prelude = String.raw`
-  const SITE = ${JSON.stringify(siteUrl)}, ORIGIN = new URL(SITE).origin;
-  if (!${opts.skipHostCheck ? "true" : "false"} && location.hostname !== 'app.snapp.taxi') {
-    alert('اول app.snapp.taxi/ride-history را باز کن و وارد شو، بعد دوباره امتحان کن.'); return; }
-  const bar = document.createElement('div'); bar.setAttribute('dir', 'rtl');
-  bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#0b4a57;color:#fff;font:15px/1.7 system-ui,sans-serif;padding:14px 16px;box-shadow:0 -6px 24px rgba(0,0,0,.4)';
-  const txt = document.createElement('div'), row = document.createElement('div');
-  row.style.cssText = 'display:flex;gap:10px;margin-top:10px;flex-wrap:wrap';
-  bar.appendChild(txt); bar.appendChild(row); document.body.appendChild(bar);
-  const say = m => { txt.textContent = String(m).replace('%c', ''); };
-  const btn = (label, fn, main) => { const b = document.createElement('button'); b.textContent = label;
-    b.style.cssText = 'flex:1;min-height:46px;border:0;border-radius:12px;font:700 15px system-ui,sans-serif;background:' + (main ? '#f4a300' : '#fff') + ';color:#241600';
-    b.onclick = fn; row.appendChild(b); };
-  say('در حال گرفتن سفرها… داده فقط به ' + ORIGIN + ' می‌رود.');
-  /* send only the fields the report reads: no photos, receipt links or map links */
-  const pl = p => p && { lat: p.lat, lng: p.lng, formatted_address: p.formatted_address };
-  const slim = r => ({ human_readable_id: r.human_readable_id, created_at: r.created_at, updated_at: r.updated_at,
-    latest_ride_status: r.latest_ride_status, final_price: r.final_price, service_type_name: r.service_type_name,
-    vehicle_model: r.vehicle_model, driver_name: r.driver_name, rate: r.rate,
-    origin: pl(r.origin), destination: pl(r.destination),
-    options: r.options ? { extra_destination: pl(r.options.extra_destination), hurry_flag: r.options.hurry_flag, waiting: r.options.waiting ? { key: 'w' } : undefined } : null,
-    rows: (r.rows || []).filter(x => x && String(x.title || '').includes('تخفیف')).map(x => ({ title: x.title, description: x.description })) });
-`;
-  var finish = String.raw`
-  if (!all.length) { say('سفری پیدا نشد. وارد شده‌ای؟'); btn('بستن', () => bar.remove()); return; }
-  const payload = { rides: all.map(slim), lifetime: life, partial };
-  say('✓ ' + all.length + ' سفر جمع شد. دکمهٔ نمایش گزارش آن‌ها را فقط به ' + ORIGIN + ' می‌فرستد.');
-  btn('نمایش گزارش', () => {
-    const w = window.open(SITE + '#from-snapp', '_blank');
-    if (!w) { say('مرورگر پنجره را باز نکرد. «ذخیرهٔ فایل» را بزن و فایل را در سایت رها کن.'); return; }
-    const on = e => {
-      if (e.origin === ORIGIN && e.data && e.data.type === 'safarnameh-ready') {
-        w.postMessage({ type: 'safarnameh-rides', data: payload }, ORIGIN);
-        removeEventListener('message', on); say('فرستاده شد. به تب سفرنامه برو.');
-      }
-    };
-    addEventListener('message', on);
-  }, true);
-  btn('ذخیرهٔ فایل', () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(payload)], { type: 'application/json' })), a = document.createElement('a');
-    a.href = url; a.download = 'snapp-rides-' + all.length + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 8000);
-  });
-  btn('بستن', () => bar.remove());
-`;
-  var body = head + " try {" + prelude + core.slice(core.indexOf(head) + head.length, cut) + finish + tail;
-  /* leading indentation only costs bytes in a bookmark */
-  return body.replace(/\n[ \t]+/g, "\n");
+  var code = String.raw`(async () => {
+const SITE = ${JSON.stringify(siteUrl)}, O = new URL(SITE).origin, d = document;
+if (!${opts.skipHostCheck ? "true" : "false"} && location.hostname != 'app.snapp.taxi') { alert('اول app.snapp.taxi/ride-history را باز کن و وارد شو.'); return; }
+const bar = d.createElement('div'), txt = d.createElement('div'), row = d.createElement('div');
+bar.dir = 'rtl';
+bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#0b4a57;color:#fff;font:15px/1.7 system-ui,sans-serif;padding:14px 16px;box-shadow:0 -6px 24px #0006';
+row.style.cssText = 'display:flex;gap:8px;margin-top:10px';
+bar.append(txt, row); d.body.append(bar);
+const say = m => { txt.textContent = m; };
+const btn = (l, f, main) => { const b = d.createElement('button'); b.textContent = l; b.onclick = f;
+  b.style.cssText = 'flex:1;min-height:46px;border:0;border-radius:12px;font:700 15px system-ui,sans-serif;color:#241600;background:' + (main ? '#f4a300' : '#fff'); row.append(b); };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const jwt = /^(Bearer\s+)?eyJ[\w-]+\.[\w-]+\.[\w-]+$/, found = [];
+for (const s of [localStorage, sessionStorage]) for (let i = 0; i < s.length; i++) {
+  const v = (s.getItem(s.key(i)) || '').trim();
+  if (jwt.test(v)) found.push(v);
+  else if (v.includes('eyJ')) try { JSON.parse(v, (k, x) => (typeof x == 'string' && jwt.test(x.trim()) && found.push(x.trim()), x)); } catch (e) {}
+}
+const tk = found.sort((a, b) => b.length - a.length)[0], H = { Accept: 'application/json' };
+if (tk) H.Authorization = /^Bearer/.test(tk) ? tk : 'Bearer ' + tk;
+const pl = p => p && { lat: p.lat, lng: p.lng, formatted_address: p.formatted_address };
+const K = 'human_readable_id created_at updated_at latest_ride_status final_price service_type_name vehicle_model driver_name rate'.split(' ');
+const slim = r => { const o = {}; K.forEach(k => o[k] = r[k]); o.origin = pl(r.origin); o.destination = pl(r.destination);
+  const x = r.options || {}; o.options = { extra_destination: pl(x.extra_destination), hurry_flag: x.hurry_flag, waiting: x.waiting ? { key: 'w' } : undefined };
+  o.rows = (r.rows || []).filter(y => y && String(y.title || '').includes('تخفیف')).map(y => ({ title: y.title, description: y.description })); return o; };
+const all = [], seen = new Set(); let life = null, partial = false;
+for (let p = 1; p <= 60; p++) {
+  let D = null;
+  for (let t = 0; t < 3; t++) {
+    try {
+      const R = await fetch('/api/api-base/v3/passenger/ride/history?page=' + p + '&archive=0', { headers: H, credentials: 'include' });
+      if (R.status == 401 || R.status == 403) { say('نشست منقضی است؛ دوباره وارد شو.'); return; }
+      if (R.status == 429) { await sleep(8000); D = null; continue; }
+      D = R.ok ? (await R.json()).data || {} : null;
+    } catch (e) { D = null; }
+    if (D && ((D.rides || []).length || !D.required_params)) break;
+    await sleep(700);
+  }
+  if (!D) { partial = true; break; }
+  if (!life && D.successful_snapp_rides != null) life = { rides: D.successful_snapp_rides, km: D.snapp_mileage, hours: D.snapp_duration };
+  const rs = D.rides || [];
+  for (const r of rs) if (r.human_readable_id && !seen.has(r.human_readable_id)) { seen.add(r.human_readable_id); all.push(r); }
+  say('در حال گرفتن سفرها… ' + all.length);
+  if (rs.length < 15) break;
+  await sleep(700);
+}
+if (!all.length) { say('سفری پیدا نشد.'); btn('بستن', () => bar.remove()); return; }
+all.sort((a, b) => a.created_at < b.created_at ? 1 : -1);
+const payload = { rides: all.map(slim), lifetime: life, partial };
+say('✓ ' + all.length + ' سفر. «نمایش گزارش» آن‌ها را فقط به ' + O + ' می‌فرستد.' + (partial ? ' (ناقص)' : ''));
+btn('نمایش گزارش', () => {
+  const w = open(SITE + '#from-snapp');
+  if (!w) { say('پنجره باز نشد؛ «ذخیرهٔ فایل» را بزن.'); return; }
+  const on = e => { if (e.origin == O && e.data && e.data.type == 'safarnameh-ready') {
+    w.postMessage({ type: 'safarnameh-rides', data: payload }, O); removeEventListener('message', on); say('فرستاده شد؛ به تب سفرنامه برو.'); } };
+  addEventListener('message', on);
+}, true);
+btn('ذخیرهٔ فایل', () => {
+  const u = URL.createObjectURL(new Blob([JSON.stringify(payload)], { type: 'application/json' })), a = d.createElement('a');
+  a.href = u; a.download = 'snapp-rides-' + all.length + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 8000);
+});
+btn('بستن', () => bar.remove());
+})().catch(e => alert('خطا در سفرنامه: ' + e.message));`;
+  /* whitespace only costs bytes in a bookmark: squeeze it outside string literals */
+  return code.split(/('(?:\\.|[^'\\\n])*')/).map(function (p, i) {
+    return i % 2 ? p : p.replace(/[ \t]*\n[ \t]*/g, "\n").replace(/[ \t]+/g, " ")
+      .replace(/ ?([=+\-*<>!&|?:,;(){}\[\]]) ?/g, "$1").replace(/([;{},])\n/g, "$1");
+  }).join("");
 };

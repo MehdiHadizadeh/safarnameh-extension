@@ -73,8 +73,8 @@
     else manual();
   });
   window.addEventListener("message", function (e) {
-    /* three checks: sent by app.snapp.taxi, by the very tab that opened this one, and shaped like ride history */
-    if (e.origin !== SNAPP_ORIGIN || !window.opener || e.source !== window.opener) return;
+    /* two checks: sent by app.snapp.taxi (its origin, which a page cannot fake), and shaped like ride history */
+    if (e.origin !== SNAPP_ORIGIN) return;
     if (!e.data || e.data.type !== "safarnameh-rides") return;
     var d = e.data.data;
     if (!d || !Array.isArray(d.rides) || d.rides.length > 20000) return;
@@ -84,10 +84,15 @@
   });
   if (location.hash === "#from-snapp") {
     recv.hidden = false;
-    try { if (window.opener) window.opener.postMessage({ type: "safarnameh-ready" }, SNAPP_ORIGIN); } catch (e) {}
+    var hasOpener = false;
+    try { if (window.opener) { hasOpener = true; window.opener.postMessage({ type: "safarnameh-ready" }, SNAPP_ORIGIN); } } catch (e) {}
+    /* if nothing arrives, say why and what to do instead of waiting forever */
     setTimeout(function () {
-      if (!recv.hidden) recv.textContent = "چیزی نرسید. به تب اسنپ برگرد و «ذخیرهٔ فایل» را بزن، بعد فایل را اینجا رها کن.";
-    }, 20000);
+      if (recv.hidden) return;
+      recv.textContent = hasOpener
+        ? "چیزی نرسید. به تب اسنپ برگرد، «ذخیرهٔ فایل» را بزن و فایل را همین‌جا رها کن."
+        : "این صفحه از تب اسنپ باز نشده یا مرورگر ارتباطش را بریده. به تب اسنپ برگرد، «ذخیرهٔ فایل» را بزن و فایل را همین‌جا رها کن.";
+    }, 6000);
   }
 
   var err = document.getElementById("err");
