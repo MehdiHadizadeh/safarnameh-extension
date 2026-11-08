@@ -19,3 +19,20 @@ h1{font-weight:900;line-height:1.2;letter-spacing:-.015em;text-wrap:balance}
 .ink{background:#0c1f26;color:#eef7f8;border:1.5px solid #2d4b56}
 .ink .v{color:#ffb52e}
 .url{font-family:M,monospace;direction:ltr;color:#8fc3cb;font-weight:600}
+
+/* cards share the anatomy of the report cards: pill + index, big value, bars, caption */
+body{background:radial-gradient(70% 90% at 22% 38%,rgba(14,124,134,.38),transparent 62%),radial-gradient(50% 60% at 95% 100%,rgba(244,163,0,.10),transparent 70%),#07323c}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card .k{display:inline-flex;align-items:center;padding:.4em .9em;border-radius:999px;background:rgba(255,255,255,.16);font-weight:700;opacity:1;white-space:nowrap}
+.amber .k{background:rgba(36,22,0,.12)}
+.paper .k{background:rgba(12,31,38,.08)}
+.card .idx{opacity:.65;white-space:nowrap}
+.card .viz{display:flex;align-items:flex-end;gap:.4em;margin-top:auto}
+.card .viz i{flex:1;border-radius:.3em .3em 0 0;background:currentColor;opacity:.28;min-width:3px}
+.card .viz i.hi{opacity:1;background:#f4a300}
+.amber .viz i.hi{background:#241600}
+.paper .viz i.hi{background:#f4a300}
+.card .viz+.n{margin-top:.9em}
+.card .row{display:flex;gap:.5em;flex-wrap:wrap;margin-top:.8em}
+.card .row span{padding:.35em .8em;border-radius:.7em;background:rgba(255,255,255,.14);font-weight:600}
+.paper .row span{background:rgba(12,31,38,.07)}
