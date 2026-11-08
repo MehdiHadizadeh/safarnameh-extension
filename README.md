@@ -8,6 +8,8 @@
 
 تاریخچهٔ سفرهای اسنپ‌ات را به یک گزارش فارسی تبدیل می‌کند: چقدر خرج کردی، کجاها رفتی و کرایهٔ مسیرهای همیشگی‌ات چقدر بالا رفته. همه‌چیز توی مرورگر خودت اجرا می‌شود، با افزونهٔ کروم یا یک سایت استاتیک.
 
+[**سایت و گزارش نمونه**](https://mehdihadizadeh.github.io/safarnameh-extension/) · [**دانلود افزونه**](https://github.com/MehdiHadizadeh/safarnameh-extension/releases/latest)
+
 <img src="branding/og.png" width="720" alt="کارت‌های نمونهٔ گزارش سفرنامه">
 
 </div>
