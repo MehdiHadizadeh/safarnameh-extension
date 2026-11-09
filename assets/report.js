@@ -699,5 +699,25 @@
     }
     apply(RANGES[0], "all");
   }
+
+  /* PDF: the browser's own "Save as PDF" through the print dialog. Print styles live in style.css.
+     Dark theme is swapped for light while printing so the PDF is not a page of ink. */
+  (function () {
+    var de = document.documentElement, prevTheme = null, opened = [], prevTitle = null;
+    window.addEventListener("beforeprint", function () {
+      prevTheme = de.getAttribute("data-theme");
+      de.setAttribute("data-theme", "light");
+      opened = [];
+      [].forEach.call(document.querySelectorAll("#report details:not([open])"), function (d) { d.open = true; opened.push(d); });
+      prevTitle = document.title; document.title = "سفرنامه - گزارش سفرهای اسنپ";
+    });
+    window.addEventListener("afterprint", function () {
+      if (prevTheme === null) de.removeAttribute("data-theme"); else de.setAttribute("data-theme", prevTheme);
+      opened.forEach(function (d) { d.open = false; });
+      if (prevTitle !== null) document.title = prevTitle;
+    });
+    var b = document.getElementById("pdf-btn");
+    if (b) b.addEventListener("click", function () { window.print(); });
+  })();
   root.SnappReport = { render: render, renderData: renderData, fa: fa, money: money };
 })(window);

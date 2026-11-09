@@ -771,3 +771,27 @@ a.btn{text-decoration:none}
 .step p code,.ext-steps code{background:var(--sunk); border:1px solid var(--hair)}
 
 .map-bg{stroke:var(--hair); stroke-width:1}
+
+/* ── print / save as PDF ─────────────────────────────── */
+@page{size:A4; margin:12mm}
+@media print{
+  html{scroll-behavior:auto}
+  body{background:#fff; font-size:13px; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  #landing,.toolbar,.theme-sw,.range,#svc-filter,#range-note,.reel-nav,.more,.sitefoot,#tip,#boot-msg,.slide.share{display:none !important}
+  .wrap{max-width:none; padding:0}
+  .reel-sec{align-items:stretch; width:100%}
+  .reel{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; width:100%; max-width:none; overflow:visible; scroll-snap-type:none}
+  .reel .slide{min-width:0; width:auto; flex:none; aspect-ratio:auto; max-height:none; min-height:0; height:auto; padding:12px; gap:6px; border-radius:14px; overflow:hidden; break-inside:avoid}
+  .reel .slide .sv,.reel .slide.mid .sv,.reel .slide.long .sv{font-size:24px; line-height:1.2; margin:4px 0; max-width:100%; overflow-wrap:anywhere}
+  .reel .slide .sk{font-size:10.5px; padding:3px 9px}
+  .reel .slide .idx,.reel .slide .vlab,.reel .slide .hint{font-size:9.5px}
+  .reel .slide .ss{font-size:10.5px; line-height:1.6; margin:0 0 6px; max-width:none}
+  .reel .slide .viz{height:44px}
+  .reel .slide .rk{font-size:10px; gap:4px}
+  .reel .slide .art{max-height:50px}
+  .reel .slide .chips2 span,.reel .slide .pill{font-size:10px; padding:3px 8px}
+  section,figure,.stats>*,.svc,.rank>*,.basket{break-inside:avoid}
+  h2,.shead{break-after:avoid}
+  details.table>*{display:block}
+  *{box-shadow:none !important}
+}
